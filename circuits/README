@@ -1,0 +1,25 @@
+## For Build 1
+
+```
+circom ./circuits/simple_multiplier.circom --r1cs --wasm --sym -o ./circuits/build1
+
+<!-- new zkey -->
+yarn snarkjs zkey new ./circuits/build1/simple_multiplier.r1cs ./circuits/powersOfTau28_hez_final_08.ptau ./circuits/build1/proving_key.zkey
+
+yarn snarkjs zkey contribute circuit_0000.zkey circuit_0001.zkey --name="1st Contributor Name" -v
+
+yarn snarkjs zkey contribute ./circuits/build1/proving_key.zkey ./circuits/build1/proving_key1.zkey --name="1st Contributer Name" -v
+
+yarn snarkjs zkey beacon ./circuits/build1/proving_key1.zkey ./circuits/build1/proving_final.zkey 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f 10 -n="Final Beacon phase2"
+
+yarn snarkjs zkv ./circuits/build1/simple_multiplier.r1cs ./circuits/powersOfTau28_hez_final_08.ptau ./circuits/build1/proving_final.zkey
+
+<!-- export the verify key from proving_final -->
+yarn snarkjs zkey export verificationkey circuits/build1/proving_final.zkey circuits/build1/verification_key.json
+
+
+<!-- create the proof  -->
+
+yarn snarkjs groth16 fullprove ./circuits/build1/input.json ./circuits/build1/simple_multiplier_js/simple_multiplier.wasm  ./circuits/build1/proving_final.zkey circuits/build1/proof.json circuits/build1/public.json
+
+```

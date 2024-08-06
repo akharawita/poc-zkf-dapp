@@ -1,0 +1,80 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[24]",
+						"name": "_proof",
+						"type": "uint256[24]"
+					},
+					{
+						"internalType": "uint256[7]",
+						"name": "_pubSignals",
+						"type": "uint256[7]"
+					}
+				],
+				"name": "verifyProof",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/WithdrawVerifier.sol": "PlonkVerifier"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":forge-std/=lib/forge-std/src/"
+		]
+	},
+	"sources": {
+		"hardhat/console.sol": {
+			"keccak256": "0x7434453e6d3b7d0e5d0eb7846ffdbc27f0ccf3b163591263739b628074dc103a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://49355f780520494d1d5a0f01858385e51bb5280ce0ecfb960f16995065dca395",
+				"dweb:/ipfs/QmSwJ6C5QLz6xKeQZS8wbwjU1KxRFTYfwbGmtzisd5sRW4"
+			]
+		},
+		"src/WithdrawVerifier.sol": {
+			"keccak256": "0xbe964e221c4026388ac67bb71844c135f63fece0f1852c90bd4dc068249cf81f",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://3cf01e96fdab4ecfff1ea2030ca9db76d4009a4ced24da8965ac59a3fe62551d",
+				"dweb:/ipfs/QmQkUAPmAAW7aW31rMCgrijfbUVWfzJxoQDk6DULnKfaak"
+			]
+		}
+	},
+	"version": 1
+}

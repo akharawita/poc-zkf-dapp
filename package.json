@@ -6,21 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-proof": "node ./scripts/generate_proof.js",
+    "gen_proof_key": "yarn snarkjs plonk setup ./circuits/build/withdraw_multiplier.r1cs ./circuits/powersOfTau28_hez_final_13.ptau ./circuits/build/proving_key.zkey",
+    "gen-verify-key": "snarkjs zkey export verificationkey circuits/build/proving_key.zkey circuits/build/verification_key.json",
+    "create-proof": "snarkjs plonk fullprove circuits/witness.json circuits/build/withdraw_multiplier_js/withdraw_multiplier.wasm circuits/build/proving_key.zkey circuits/build/proof.json circuits/build/public.json",
+    "verify-proof": "snarkjs plonk verify circuits/build/verification_key.json circuits/build/public.json circuits/build/proof.json",
+    "export-verifier": "snarkjs zkey export solidityverifier circuits/build/proving_key.zkey circuits/build/WithdrawVerifier.sol"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "@rainbow-me/rainbowkit": "^2.1.3",
+    "@tanstack/react-query": "^5.51.21",
+    "ethers": "^6.13.2",
+    "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.5"
+    "react-hook-form": "^7.52.2",
+    "snarkjs": "^0.7.4",
+    "viem": "^2.18.8",
+    "wagmi": "^2.12.2"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "circomlib": "^2.0.5",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "typescript": "^5"
   }
 }
