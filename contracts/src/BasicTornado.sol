@@ -64,6 +64,7 @@ contract BasicTornado {
     }
 
     function withdraw(bytes calldata data) external {
+        // Decode the input data
         (bytes memory proofData, bytes memory publicSignals) = abi.decode(
             data,
             (bytes, bytes)
@@ -71,42 +72,51 @@ contract BasicTornado {
 
         // Decode publicSignals data
         (
-            bytes32 _nullifierHash,
-            bytes32 _commitment,
+            bytes32 nullifierHash,
+            bytes32 commitment,
             uint256 x,
             uint256 y,
-            uint256 _amount,
-            uint256 _tokenId,
+            uint256 amount,
+            uint256 tokenId,
             uint256 z
         ) = abi.decode(
                 publicSignals,
                 (bytes32, bytes32, uint256, uint256, uint256, uint256, uint256)
             );
 
+        // Create a struct for public signals
         PublicSignals memory publicSignalsData = PublicSignals(
-            _nullifierHash,
-            _commitment,
+            nullifierHash,
+            commitment,
             x,
             y,
-            _amount,
-            _tokenId,
+            amount,
+            tokenId,
             z
         );
 
+        // Decode proof data
         (bytes memory proof, bytes memory proof1, bytes memory proof2) = abi
             .decode(proofData, (bytes, bytes, bytes));
-
         bytes memory proofPacked = abi.encodePacked(proof, proof1, proof2);
-        uint256[24] memory _proof = abi.decode(proofPacked, (uint256[24]));
+        uint256[24] memory proofArray = abi.decode(proofPacked, (uint256[24]));
 
-        _commitment = bytes32(
+        // Recompute commitment hash
+        bytes32 recomputedCommitment = bytes32(
             keccak256(abi.encode(publicSignalsData.commitment))
         );
 
-        require(!nullifierHashes[_nullifierHash], "Nullifier already exists");
-        require(deposits[_commitment].isDeposited, "Commitment does not exist");
+        // Check if the nullifier hash has already been used
         require(
-            publicSignalsData.amount <= deposits[_commitment].amount,
+            !nullifierHashes[publicSignalsData.nullifierHash],
+            "Nullifier already exists"
+        );
+
+        // Check if the commitment exists and has sufficient balance
+        Deposit storage depositData = deposits[recomputedCommitment];
+        require(depositData.isDeposited, "Commitment does not exist");
+        require(
+            publicSignalsData.amount <= depositData.amount,
             "[0]: Insufficient balance"
         );
         require(
@@ -115,9 +125,11 @@ contract BasicTornado {
             "[1]: Insufficient balance"
         );
 
-        nullifierHashes[_nullifierHash] = true;
+        // Mark the nullifier hash as used
+        nullifierHashes[publicSignalsData.nullifierHash] = true;
 
-        uint256[7] memory prepairPublicSignals = [
+        // Prepare public signals for proof verification
+        uint256[7] memory preparedPublicSignals = [
             convertToUint256(publicSignalsData.nullifierHash),
             convertToUint256(publicSignalsData.commitment),
             publicSignalsData.x,
@@ -127,23 +139,24 @@ contract BasicTornado {
             publicSignalsData.z
         ];
 
+        // Verify the proof
         require(
-            verifier.verifyProof(_proof, prepairPublicSignals),
+            verifier.verifyProof(proofArray, preparedPublicSignals),
             "Invalid proof"
         );
 
+        // Transfer the tokens
         token.transfer(
             msg.sender,
             publicSignalsData.tokenId,
             publicSignalsData.amount
         );
 
-        emit WithdrawalMade(_nullifierHash, _amount);
+        // Emit the withdrawal event
+        emit WithdrawalMade(nullifierHash, amount);
     }
 
-    function convertToUint256(
-        bytes32 _nullifierHash
-    ) public pure returns (uint256) {
-        return uint256(_nullifierHash);
+    function convertToUint256(bytes32 data) public pure returns (uint256) {
+        return uint256(data);
     }
 }
