@@ -1,20 +1,45 @@
-const snarkjs = require("snarkjs");
-const fs = require("fs");
+import path from "path";
+// @ts-ignore
+import * as snarkjs from "snarkjs";
 
-export async function proof_generator(a: number, b: number): Promise<{ proof: any; publicSignals: any }> {
-  const { proof, publicSignals } = await snarkjs.plonk.fullProve(
-    { a, b },
-    "../circuits/build/swap_multiplier_js/swap_multiplier.wasm",
-    "../circuits/build/proving_key.zkey"
-  );
+const FILES_URL = "http://localhost:58352";
 
-  fs.writeFileSync("./build/proof.json", JSON.stringify(proof));
-  fs.writeFileSync("./build/public.json", JSON.stringify(publicSignals));
-  console.log("Proof & Public Generated!");
+type GenerateProofInput = {
+  secret: number;
+  amount: number;
+  tokenId: number;
+  nullifier: number;
+};
 
-  return { proof, publicSignals };
-}
+export const generateProof = async ({ secret, amount, tokenId, nullifier }: GenerateProofInput): Promise<any> => {
+  console.log(`Generating vote proof with inputs: ${secret}, ${amount}, ${tokenId}, ${nullifier}`);
 
-// proof_generator(10, 21).then(() => {
-//   process.exit(0);
-// });
+  const inputs = {
+    in: [secret, amount, tokenId, nullifier],
+  };
+
+  // Paths to the .wasm file and proving key
+  const wasmPath = path.join(process.cwd(), `${FILES_URL}/withdraw_multiplier_js/withdraw_multiplier.wasm`);
+  const provingKeyPath = path.join(process.cwd(), `${FILES_URL}/withdraw_multiplier_js/proving_key.zkey`);
+
+  try {
+    // Generate a proof of the circuit and create a structure for the output signals
+    const { proof, publicSignals } = await snarkjs.plonk.fullProve(inputs, wasmPath, provingKeyPath);
+
+    // Convert the data into Solidity calldata that can be sent as a transaction
+    const calldataBlob = await snarkjs.plonk.exportSolidityCallData(proof, publicSignals);
+
+    const calldata = calldataBlob.split(",");
+
+    return {
+      proof: calldata[0],
+      publicSignals: JSON.parse(calldata[1]),
+    };
+  } catch (err) {
+    console.log(`Error:`, err);
+    return {
+      proof: "",
+      publicSignals: [],
+    };
+  }
+};

@@ -1,0 +1,562 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "InsufficientBalance",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "InsufficientPermission",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Approval",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"name": "OperatorSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "caller",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "allowance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "burn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					}
+				],
+				"name": "isOperator",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "mint",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"name": "setOperator",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes4",
+						"name": "interfaceId",
+						"type": "bytes4"
+					}
+				],
+				"name": "supportsInterface",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "supported",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"InsufficientBalance(address,uint256)": [
+					{
+						"details": "Thrown when owner balance for id is insufficient.",
+						"params": {
+							"id": "The id of the token.",
+							"owner": "The address of the owner."
+						}
+					}
+				],
+				"InsufficientPermission(address,uint256)": [
+					{
+						"details": "Thrown when spender allowance for id is insufficient.",
+						"params": {
+							"id": "The id of the token.",
+							"spender": "The address of the spender."
+						}
+					}
+				]
+			},
+			"events": {
+				"Approval(address,address,uint256,uint256)": {
+					"params": {
+						"amount": "The amount of the token.",
+						"id": "The id of the token.",
+						"owner": "The address of the owner.",
+						"spender": "The address of the spender."
+					}
+				},
+				"OperatorSet(address,address,bool)": {
+					"params": {
+						"approved": "The approval status.",
+						"owner": "The address of the owner.",
+						"spender": "The address of the spender."
+					}
+				},
+				"Transfer(address,address,address,uint256,uint256)": {
+					"params": {
+						"amount": "The amount of the token.",
+						"id": "The id of the token.",
+						"receiver": "The address of the receiver.",
+						"sender": "The address of the sender."
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"approve(address,uint256,uint256)": {
+					"params": {
+						"amount": "The amount of the token.",
+						"id": "The id of the token.",
+						"spender": "The address of the spender."
+					}
+				},
+				"setOperator(address,bool)": {
+					"params": {
+						"approved": "The approval status.",
+						"spender": "The address of the spender."
+					}
+				},
+				"supportsInterface(bytes4)": {
+					"params": {
+						"interfaceId": "The interface identifier, as specified in ERC-165."
+					},
+					"returns": {
+						"supported": "True if the contract implements `interfaceId`."
+					}
+				},
+				"transfer(address,uint256,uint256)": {
+					"params": {
+						"amount": "The amount of the token.",
+						"id": "The id of the token.",
+						"receiver": "The address of the receiver."
+					}
+				},
+				"transferFrom(address,address,uint256,uint256)": {
+					"params": {
+						"amount": "The amount of the token.",
+						"id": "The id of the token.",
+						"receiver": "The address of the receiver.",
+						"sender": "The address of the sender."
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"events": {
+				"Approval(address,address,uint256,uint256)": {
+					"notice": "The event emitted when an approval occurs."
+				},
+				"OperatorSet(address,address,bool)": {
+					"notice": "The event emitted when an operator is set."
+				},
+				"Transfer(address,address,address,uint256,uint256)": {
+					"notice": "The event emitted when a transfer occurs."
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"allowance(address,address,uint256)": {
+					"notice": "Spender allowance of an id."
+				},
+				"approve(address,uint256,uint256)": {
+					"notice": "Approves an amount of an id to a spender."
+				},
+				"balanceOf(address,uint256)": {
+					"notice": "Owner balance of an id."
+				},
+				"isOperator(address,address)": {
+					"notice": "Checks if a spender is approved by an owner as an operator."
+				},
+				"setOperator(address,bool)": {
+					"notice": "Sets or removes a spender as an operator for the caller."
+				},
+				"supportsInterface(bytes4)": {
+					"notice": "Checks if a contract implements an interface."
+				},
+				"transfer(address,uint256,uint256)": {
+					"notice": "Transfers an amount of an id from the caller to a receiver."
+				},
+				"transferFrom(address,address,uint256,uint256)": {
+					"notice": "Transfers an amount of an id from a sender to a receiver."
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/ZKFToken.sol": "ZKFToken"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":forge-std/=lib/forge-std/src/"
+		]
+	},
+	"sources": {
+		"src/ERC6909.sol": {
+			"keccak256": "0xc3edc99bbad3247515007bb5855398b5b16e61f129850f65dfe955141feb9906",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f3338e52fa45ef16022cbf401b015f19dfb6929af49f209af41094a358d2cb48",
+				"dweb:/ipfs/QmdfoX4mJYudJMSSjbmVcHWjwan8eBBFCYLxCm8G5nfrxK"
+			]
+		},
+		"src/ZKFToken.sol": {
+			"keccak256": "0x0023562624054acebfe782c5d3c67949f7766f36b2413d1f563bf32149877e1b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d8e77ae322adf0a1b2ba436c142d859db9cd2ca43043050be960ace8fe9efb01",
+				"dweb:/ipfs/QmbdKNuGKK79fBUd5BfBFQ2j4KQYuEH16NV6jPXJH33K6R"
+			]
+		}
+	},
+	"version": 1
+}

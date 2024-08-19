@@ -2,85 +2,181 @@
 
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { abi as VerifierAbi } from "@/lib/abi/IPlonkVerifier.json";
-import { useReadContract } from "wagmi";
+import { executeDeposit, executeWithdraw, useGenerateProof } from "@/hooks/useProof";
+
+import { useApprove } from "@/hooks/useApprove";
+import { useGetBalance } from "@/hooks/useBalance";
+import { getContractAddress } from "@/utils/constants";
+import { Box, Button, Input, Select, useToast } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { parseEther } from "viem";
+import { useAccount } from "wagmi";
 
 type Inputs = {
-  input_a: number;
-  input_b: number;
+  select_token: string;
+  amount: string;
+  secret: number;
+  nullifier: string;
+  submit_type: "deposit" | "withdraw";
 };
 
 export default function ZkfPage() {
-  const proof = [
-    "15554572874070273459024021647137410327645983519704767891827821443528764177653",
-    "12894631816980168183662580682990084552800607703314759747016000993408078589466",
-    "9739172124930571002331168461361638854467696157053185003296531348250609995099",
-    "14891060481786495736995058330181050466033481474521073710946646861199359809526",
-    "12612614941622906760143020923418963709682034463846098867544418718897368681427",
-    "7393193848033187695105371204729048094091909352601533787704406252392828956366",
-    "1720570938059819152311809241554665446274950562048954075071642537182822124871",
-    "16807778918487411711169401149167223835015410783856576255339918911129550173386",
-    "713184839308591970626205183530982440867412528308265637526962391079086060159",
-    "2664715765611421426531717461280312712503699694198362255916127264499423314320",
-    "18707171352146608396822624903191916636182503509306681244015210506122410478418",
-    "8419506244372709908433596465326816120914235080733646383084488483926833969811",
-    "8482690143768986252585244370400473753595651323544343041093693418672128903141",
-    "9798195095933719600502013527927654353678768772558968638059675221140311390191",
-    "1204385555033607147982768020314546957077926407997885982940959679278888017971",
-    "6410622587902169859128547011974716574079924225221473310613596377182963981662",
-    "832026854646240948019571892043302885517804906147535592234876363879348199489",
-    "840076125045089023531223719701445190066796485951788559037038874165009114550",
-    "10397095501772515809181252169871526235271742629243988351726607937545673091036",
-    "597211190020136366935584785635331396320835300989209338228068945521064633721",
-    "7289521396077047818047385512220901790598048092098161837063190634591935131308",
-    "13990562260470277311489828421446659119224868859035820256193019899327092458867",
-    "14624400929120835447127622562696617935507533630862212880436752923176181936316",
-    "3372989280662244672314212346870450221438247229189827470561332130536233062853",
-  ];
-  const publicSignals = [BigInt(210)];
+  const [type, setType] = useState("deposit");
 
-  const { data, ...rest } = useReadContract({
-    address: "0x8AF6FD5d350a3a5d0512A4b44825a2551Fad46bf",
-    abi: VerifierAbi,
-    functionName: "verifyProof",
-    args: [proof.map(BigInt), publicSignals],
+  const { address } = useAccount();
+  const toast = useToast();
+
+  const { balance } = useGetBalance({ address, tokenId: 1 });
+
+  const { allowance, approve } = useApprove({
+    tokenId: 1,
+    spender: getContractAddress("basicTornado") as `0x${string}`,
+    enabled: !!address,
   });
 
-  console.log(data, rest);
-
-  // const { data, isError, error } = useSimulateContract({
-  //   abi,
-  //   address: "0x4ACb290BC6a49070d5f468eaecc8B332dBD9E1B6",
-  //   functionName: "submitProof",
-  //   args: [proof, publicSignals],
-  // });
+  const { mutate: mutateGenerateProof, isPending, data } = useGenerateProof();
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
-  // console.log(data, isError, error);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setType(data.submit_type);
+
+    mutateGenerateProof({
+      tokenId: Number(data.select_token),
+      amount: parseEther(data.amount),
+      secret: Number(data.secret),
+      nullifier: parseInt(`${Number(data.nullifier) / 1e30}`),
+    });
+  };
+
+  useEffect(() => {
+    if (
+      data &&
+      data?.proof &&
+      data?.publicSignals &&
+      data?.proof?.length &&
+      data?.publicSignals?.length &&
+      data?.isValid &&
+      type
+    ) {
+      const execute = async () => {
+        const [, commitment, , , amount, tokenId] = data.publicSignals;
+
+        if (type === "deposit") {
+          executeDeposit(BigInt(commitment), Number(tokenId), amount)
+            .then(() => {
+              toast({
+                title: "Deposit success",
+                description: "We've deposited your funds.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+              });
+            })
+            .catch((e) => {
+              toast({
+                title: "Deposit failed",
+                description: e.message.replace(/args:.*/, ""),
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              });
+            });
+
+          return;
+        }
+
+        if (type === "withdraw") {
+          executeWithdraw(data?.proof, data?.publicSignals)
+            .then(() => {
+              toast({
+                title: "Withdraw success",
+                description: "We've deposited your funds.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+              });
+            })
+            .catch((e) => {
+              toast({
+                title: "Withdraw failed",
+                description: e.message.replace(/args:.*/, ""),
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              });
+            });
+
+          return;
+        }
+      };
+
+      execute();
+    }
+
+    if (data?.proof && data?.publicSignals && data?.proof?.length && data?.publicSignals?.length && !data?.isValid) {
+      toast({
+        title: "Proof failed",
+        description: "The proof is invalid.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [data, type]);
+
+  if (!address) return null;
 
   return (
     <div>
       <h1>Hello Zero-Knowledge proof</h1>
 
+      <Box display="flex" gap="2" paddingY="15px">
+        <Button
+          onClick={() => {
+            approve?.write();
+          }}
+        >
+          {Number(allowance || 0) > 0 ? "Approved" : "Approve"}
+        </Button>
+      </Box>
+
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <input defaultValue="0" type="number" {...register("input_a", { required: true })} />
-            {errors.input_a && <span>This field is required</span>}
+            Submit Types:
+            <Select defaultValue="deposit" {...register("submit_type", { required: true })}>
+              <option value="deposit">Deposit</option>
+              <option value="withdraw">Withdraw</option>
+            </Select>
+          </div>
+          TokenId:
+          <Select defaultValue="1" {...register("select_token", { required: true })}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </Select>
+          <div>Balance: {balance}</div>
+          <div>
+            Amount: <Input defaultValue="1" type="string" {...register("amount", { required: true })} />
+            {errors.amount && <span>This field is required</span>}
           </div>
           <div>
-            <input defaultValue="1" type="number" {...register("input_b")} />
-            {errors.input_a && <span>This field is required</span>}
+            Secret: <Input defaultValue="123123" type="number" {...register("secret", { required: true })} />
+            {errors.secret && <span>This field is required</span>}
           </div>
-
-          <input type="submit" />
+          <div>
+            Nullifier:
+            <Input value={address} type="string" {...register("nullifier", { required: true })} />
+            {errors.nullifier && <span>This field is required</span>}
+          </div>
+          <Box paddingY="15px" display="flex" gridGap="5">
+            <Button type="submit">Submit</Button> {isPending && <span>Proofing...</span>}
+          </Box>
         </form>
       </div>
     </div>

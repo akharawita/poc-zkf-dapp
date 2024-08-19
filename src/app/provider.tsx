@@ -1,26 +1,23 @@
 "use client";
 
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { ChakraProvider } from "@chakra-ui/react";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { holesky } from "wagmi/chains";
 
-const config = getDefaultConfig({
-  appName: "My RainbowKit App",
-  projectId: "123",
-  chains: [holesky],
-  ssr: true,
-});
+import { config } from "@/utils/wagmi";
 
 const queryClient = new QueryClient();
 
 const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ChakraProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>{children}</RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ChakraProvider>
   );
 };
 

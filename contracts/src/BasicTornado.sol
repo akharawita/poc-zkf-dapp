@@ -10,13 +10,39 @@ contract BasicTornado {
     struct Deposit {
         uint256 amount;
         uint256 id;
-        bytes32 commitment;
+        uint256 commitment;
         bool isDeposited;
     }
 
+    struct ProofData {
+        uint256 a1;
+        uint256 a2;
+        uint256 b1;
+        uint256 b2;
+        uint256 c1;
+        uint256 c2;
+        uint256 z1;
+        uint256 z2;
+        uint256 t1_1;
+        uint256 t1_2;
+        uint256 t2_1;
+        uint256 t2_2;
+        uint256 t3_1;
+        uint256 t3_2;
+        uint256 wxi1;
+        uint256 wxi2;
+        uint256 wxiw1;
+        uint256 wxiw2;
+        uint256 evala;
+        uint256 evalb;
+        uint256 evalc;
+        uint256 evals1;
+        uint256 evals2;
+        uint256 evalzw;
+    }
     struct PublicSignals {
-        bytes32 nullifierHash;
-        bytes32 commitment;
+        uint256 nullifier;
+        uint256 commitment;
         uint256 x;
         uint256 y;
         uint256 amount;
@@ -42,12 +68,16 @@ contract BasicTornado {
     }
 
     function deposit(
-        bytes32 _commitment,
+        uint256 _commitment,
         uint256 _id,
         uint256 _amount
     ) external returns (bytes32) {
+        bytes32 recomputedCommitment = bytes32(
+            keccak256(abi.encode(_commitment))
+        );
+
         require(
-            !deposits[_commitment].isDeposited,
+            !deposits[recomputedCommitment].isDeposited,
             "Commitment already exists"
         );
         require(
@@ -55,60 +85,61 @@ contract BasicTornado {
             "Insufficient balance"
         );
 
-        deposits[_commitment] = Deposit(_amount, _id, _commitment, true);
+        deposits[recomputedCommitment] = Deposit(
+            _amount,
+            _id,
+            _commitment,
+            true
+        );
         token.transferFrom(msg.sender, address(this), _id, _amount);
 
-        emit DepositMade(_commitment, _id, _amount);
+        emit DepositMade(recomputedCommitment, _id, _amount);
 
-        return _commitment;
+        return recomputedCommitment;
     }
 
     function withdraw(bytes calldata data) external {
-        // Decode the input data
-        (bytes memory proofData, bytes memory publicSignals) = abi.decode(
-            data,
-            (bytes, bytes)
-        );
+        (ProofData memory proofData, PublicSignals memory publicSignals) = abi
+            .decode(data, (ProofData, PublicSignals));
 
-        // Decode publicSignals data
-        (
-            bytes32 nullifierHash,
-            bytes32 commitment,
-            uint256 x,
-            uint256 y,
-            uint256 amount,
-            uint256 tokenId,
-            uint256 z
-        ) = abi.decode(
-                publicSignals,
-                (bytes32, bytes32, uint256, uint256, uint256, uint256, uint256)
-            );
-
-        // Create a struct for public signals
-        PublicSignals memory publicSignalsData = PublicSignals(
-            nullifierHash,
-            commitment,
-            x,
-            y,
-            amount,
-            tokenId,
-            z
-        );
-
-        // Decode proof data
-        (bytes memory proof, bytes memory proof1, bytes memory proof2) = abi
-            .decode(proofData, (bytes, bytes, bytes));
-        bytes memory proofPacked = abi.encodePacked(proof, proof1, proof2);
-        uint256[24] memory proofArray = abi.decode(proofPacked, (uint256[24]));
+        uint256[24] memory proofArray = [
+            proofData.a1,
+            proofData.a2,
+            proofData.b1,
+            proofData.b2,
+            proofData.c1,
+            proofData.c2,
+            proofData.z1,
+            proofData.z2,
+            proofData.t1_1,
+            proofData.t1_2,
+            proofData.t2_1,
+            proofData.t2_2,
+            proofData.t3_1,
+            proofData.t3_2,
+            proofData.wxi1,
+            proofData.wxi2,
+            proofData.wxiw1,
+            proofData.wxiw2,
+            proofData.evala,
+            proofData.evalb,
+            proofData.evalc,
+            proofData.evals1,
+            proofData.evals2,
+            proofData.evalzw
+        ];
 
         // Recompute commitment hash
         bytes32 recomputedCommitment = bytes32(
-            keccak256(abi.encode(publicSignalsData.commitment))
+            keccak256(abi.encode(publicSignals.commitment))
+        );
+        bytes32 recomputedNullifer = bytes32(
+            keccak256(abi.encode(publicSignals.nullifier))
         );
 
         // Check if the nullifier hash has already been used
         require(
-            !nullifierHashes[publicSignalsData.nullifierHash],
+            !nullifierHashes[recomputedNullifer],
             "Nullifier already exists"
         );
 
@@ -116,27 +147,27 @@ contract BasicTornado {
         Deposit storage depositData = deposits[recomputedCommitment];
         require(depositData.isDeposited, "Commitment does not exist");
         require(
-            publicSignalsData.amount <= depositData.amount,
+            publicSignals.amount <= depositData.amount,
             "[0]: Insufficient balance"
         );
         require(
-            publicSignalsData.amount <=
-                token.balanceOf(address(this), publicSignalsData.tokenId),
+            publicSignals.amount <=
+                token.balanceOf(address(this), publicSignals.tokenId),
             "[1]: Insufficient balance"
         );
 
         // Mark the nullifier hash as used
-        nullifierHashes[publicSignalsData.nullifierHash] = true;
+        nullifierHashes[recomputedNullifer] = true;
 
         // Prepare public signals for proof verification
         uint256[7] memory preparedPublicSignals = [
-            convertToUint256(publicSignalsData.nullifierHash),
-            convertToUint256(publicSignalsData.commitment),
-            publicSignalsData.x,
-            publicSignalsData.y,
-            publicSignalsData.amount,
-            publicSignalsData.tokenId,
-            publicSignalsData.z
+            publicSignals.nullifier,
+            publicSignals.commitment,
+            publicSignals.x,
+            publicSignals.y,
+            publicSignals.amount,
+            publicSignals.tokenId,
+            publicSignals.z
         ];
 
         // Verify the proof
@@ -146,14 +177,10 @@ contract BasicTornado {
         );
 
         // Transfer the tokens
-        token.transfer(
-            msg.sender,
-            publicSignalsData.tokenId,
-            publicSignalsData.amount
-        );
+        token.transfer(msg.sender, publicSignals.tokenId, publicSignals.amount);
 
         // Emit the withdrawal event
-        emit WithdrawalMade(nullifierHash, amount);
+        emit WithdrawalMade(recomputedNullifer, publicSignals.amount);
     }
 
     function convertToUint256(bytes32 data) public pure returns (uint256) {

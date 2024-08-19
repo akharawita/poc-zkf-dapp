@@ -12,12 +12,12 @@
 
 #### Create the proof
 
-- Run `snarkjs plonk fullprove circuits/witness.json circuits/build/withdraw_multiplier_js/withdraw_multiplier.wasm circuits/build/proving_key.zkey circuits/build/proof.json circuits/build/public.json` to generate the `proof.json` and `public.json` file
+- Run `yarn snarkjs plonk fullprove circuits/witness.json circuits/build/withdraw_multiplier_js/withdraw_multiplier.wasm circuits/build/proving_key.zkey circuits/build/proof.json circuits/build/public.json` to generate the `proof.json` and `public.json` file
 
 `** Optional step **
 We need a verification key that can be generated from the proving key to verify the proof. Here’s how to get that:`
 
-- Run `snarkjs zkey export verificationkey circuits/build/proving_key.zkey circuits/build/verification_key.json` to generate the `verification_key.json` file
+- Run `yarn snarkjs zkey export verificationkey circuits/build/proving_key.zkey circuits/build/verification_key.json` to generate the `verification_key.json` file
 
 #### Verify the proof
 
@@ -25,11 +25,11 @@ We use the this command to verify the proof, passing in the verification_key we 
 
 If all is well, you should see that OK has been outputted to your console. This signifies the proof is valid.
 
-- Run `snarkjs plonk verify circuits/build/verification_key.json circuits/build/public.json circuits/build/proof.json` to verify the proof
+- Run `yarn snarkjs plonk verify circuits/build/verification_key.json circuits/build/public.json circuits/build/proof.json` to verify the proof
 
 #### Similate a verification call
 
-- Run `snarkjs zkey export soliditycalldata circuits/build/public.json circuits/build/proof.json` to cut and paste the result directly in the verify function in the `WithdrawVerifier.sol` contract
+- Run `yarn snarkjs zkey export soliditycalldata circuits/build/public.json circuits/build/proof.json` to cut and paste the result directly in the verify function in the `WithdrawVerifier.sol` contract
 
 And voila! That's all there is to it :)
 
@@ -49,6 +49,7 @@ forge test --match-path ./test/SimpleTornado.t.sol -vvv
 - https://github.com/iden3/rollup/blob/master/circuits/rollup.circom
 - https://hackernoon.com/protect-yourself-from-identity-theft-by-using-zero-knowledge-proof-solidity-and-ethereum
 - https://github.com/zkBob/zkbob-contracts
+- https://github.com/nalinbhardwaj/snarky-sudoku/blob/main/client/lib/util.ts
 
 ---
 
@@ -57,6 +58,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ## Getting Started
 
 First, run the development server:
+
+- Copy `proving_key.zkey` and `withdraw_multiplier.wasm` to the `public/zksnarks` folder
 
 ```bash
 npm run dev

@@ -1,0 +1,272 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "contract ERC6909",
+						"name": "_token",
+						"type": "address"
+					},
+					{
+						"internalType": "contract PlonkVerifier",
+						"name": "_verifier",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "commitment",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositMade",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "nullifierHash",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "WithdrawalMade",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "data",
+						"type": "bytes32"
+					}
+				],
+				"name": "convertToUint256",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_commitment",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "deposit",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "deposits",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "commitment",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isDeposited",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "nullifierHashes",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token",
+				"outputs": [
+					{
+						"internalType": "contract ERC6909",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "verifier",
+				"outputs": [
+					{
+						"internalType": "contract PlonkVerifier",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/BasicTornado.sol": "BasicTornado"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":forge-std/=lib/forge-std/src/"
+		]
+	},
+	"sources": {
+		"lib/forge-std/src/console.sol": {
+			"keccak256": "0xf61cb43a94d8318049d0a7f567af8c0aa952b5762a43851b130b90b3fcde0c6a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://53a52c6c3aeb22f7a18f53fca16af590308a8e3e5507e74df9b8e2561c932194",
+				"dweb:/ipfs/QmaaXuY8mC66YoE2xyZdWuLHXqAxLjbnNxiofx8BTP1MRn"
+			]
+		},
+		"src/BasicTornado.sol": {
+			"keccak256": "0x974e3e5364a98bbe105117ba69f3efcb82e12dbe3e8cbad53476fca24a316857",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7545a6cee626da2e23b3c3107166ebb223267c96ad0f460730b361ccf86130b5",
+				"dweb:/ipfs/QmRyn1taW2xY4MRjrS9y3Kd8cggWFdUpgWdRKjrLXvTwkf"
+			]
+		},
+		"src/ERC6909.sol": {
+			"keccak256": "0xc3edc99bbad3247515007bb5855398b5b16e61f129850f65dfe955141feb9906",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f3338e52fa45ef16022cbf401b015f19dfb6929af49f209af41094a358d2cb48",
+				"dweb:/ipfs/QmdfoX4mJYudJMSSjbmVcHWjwan8eBBFCYLxCm8G5nfrxK"
+			]
+		},
+		"src/WithdrawVerifier.sol": {
+			"keccak256": "0x3bdf101b18ae1a6c1d5f25cec9631e38451d164ff56eabfbe4cce6feeda933be",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://57cabc2fe7b56f1d7880ca34e4d66f01d6d55cbf6ed5e97bf6ec52c7244b2dcf",
+				"dweb:/ipfs/QmSauRw5ydeRzc1NCWScPMT5M6tLpNseDEj6UzQXvWas9D"
+			]
+		}
+	},
+	"version": 1
+}
